@@ -11,7 +11,10 @@ public class PointWrapper {
   private Long id;
 
   @ManyToOne
-  private Point point;
+  private Point start;
+
+  @ManyToOne
+  private Point end;
 
   public void setId(Long id) {
     this.id = id;

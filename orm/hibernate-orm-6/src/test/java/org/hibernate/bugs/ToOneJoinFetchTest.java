@@ -32,12 +32,15 @@ public class ToOneJoinFetchTest {
 		entityManager.getTransaction().begin();
 		//language=HQL
 		var hql = """
-		SELECT p
+		SELECT new org.hibernate.entities.StartAndEndModel(start, end)
 		FROM PointWrapper pw
-		JOIN pw.point p
-		JOIN FETCH p.stopPoint s
-		JOIN FETCH p.timingPoint t
-		ORDER BY p.code DESC
+		JOIN pw.start start
+		JOIN pw.end end
+		JOIN FETCH start.stopPoint startStop
+		JOIN FETCH start.timingPoint startTiming
+		JOIN FETCH end.stopPoint endStop
+		JOIN FETCH end.timingPoint endTiming
+		ORDER BY start.code DESC
 		""";
 		var res = entityManager.createQuery(hql, Point.class).getResultList();
 		Assert.assertEquals(0, res.size());
