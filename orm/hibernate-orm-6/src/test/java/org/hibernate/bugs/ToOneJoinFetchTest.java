@@ -30,12 +30,21 @@ public class ToOneJoinFetchTest {
 	public void testToOneAttributeJoinFetch() throws Exception {
 		EntityManager entityManager = entityManagerFactory.createEntityManager();
 		entityManager.getTransaction().begin();
+
+		/*
+		 * Fail occurs at BaseSqmToSqlAstConverter.java -> createFetch -> fromClauseIndex.findFetchedJoinByPath( resolvedNavigablePath )
+		 *
+		 * because FromClauseIndex -> fetchesByPath does not consider the aliases
+		 */
+
 		//language=HQL
 		var hql = """
 		SELECT new org.hibernate.entities.StartAndEndModel(start, end)
-		FROM PointWrapper pw
-		JOIN pw.start start
-		JOIN pw.end end
+		FROM Link l
+		JOIN PointWrapper startW ON startW.link = l
+		JOIN PointWrapper endW ON endW.link = l
+		JOIN startW.point start
+		JOIN endW.point end
 		JOIN FETCH start.stopPoint startStop
 		JOIN FETCH start.timingPoint startTiming
 		JOIN FETCH end.stopPoint endStop
