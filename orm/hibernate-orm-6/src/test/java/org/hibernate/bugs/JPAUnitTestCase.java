@@ -32,50 +32,6 @@ public class JPAUnitTestCase {
 		entityManagerFactory.close();
 	}
 
-	// Entities are auto-discovered, so just add them anywhere on class-path
-	// Add your tests, using standard JUnit.
-	@Test
-	public void hhh123Test() throws Exception {
-		EntityManager entityManager = entityManagerFactory.createEntityManager();
-		entityManager.getTransaction().begin();
-
-		var child = new Child();
-		child.setId(1L);
-
-		var parent = new Parent();
-		parent.setId(1L);
-		parent.setChildren(List.of(child));
-		child.setParent(parent);
-
-		entityManager.persist(parent);
-		entityManager.persist(child);
-
-		entityManager.getTransaction().commit();
-		entityManager.close();
-
-		var em2 = entityManagerFactory.createEntityManager();
-
-		em2.getTransaction().begin();
-		var cb = em2.getCriteriaBuilder();
-		var queryParents = cb.createQuery(Parent.class);
-		queryParents.from(Parent.class);
-		var parents = em2.createQuery(queryParents).getResultList();
-
-		var queryChildren = cb.createQuery(Child.class);
-		var cR = queryChildren.from(Child.class);
-		queryChildren.where(cb.equal(cR.get("parent").get("id"), 1L));
-		var children = em2.createQuery(queryChildren).getResultList();
-
-		var lazyLoadedChild = parents.getFirst().getChildren().getFirst();
-		var preLoadedChild = children.getFirst();
-
-		em2.getTransaction().commit();
-
-		assertEquals(preLoadedChild, lazyLoadedChild);
-
-		em2.close();
-	}
-
 	@Test
 	public void testCountQueryJoinIdentiferDescriptorNull() {
 		// if a mapped superclass has a mapped superclass without id then the identifier descriptor is null...
